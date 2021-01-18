@@ -1,3 +1,8 @@
+import locale
+
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
+
 class UnparsableOrderException(Exception):
     def __init__(self, input_values):
         self.txt = f"Cant' parse the following elements: {input_values}"
@@ -9,28 +14,33 @@ class Order:
                 and isinstance(eval(price), int) and isinstance(eval(volume), int):
             self.type = order_type
             self.id = order_id
-            self.price = price
-            self.volume = volume
+            self.price = int(price)
+            self.volume = int(volume)
         else:
             raise UnparsableOrderException([order_type, order_id, price, volume])
 
     def get_order(self):
+        volume_fmt = locale.format_string('%d', self.volume, True)
+        price_fmt = locale.format_string('%d', self.price, True)
         if self.type == 'B':
-            return [self.id, self.price, self.volume]
+            return [self.id, price_fmt, volume_fmt]
         else:
-            return [self.volume, self.price, self.id]
+            return [volume_fmt, price_fmt, self.id]
 
 
 class IcebergOrder(Order):
     def __init__(self, order_type, order_id, price, volume, peak_size):
         super().__init__(order_type, order_id, price, volume)
-        if isinstance(eval(peak_size), int) and peak_size < self.volume:
-            self.peak_size = peak_size
+        if isinstance(eval(peak_size), int) and int(peak_size) < self.volume:
+            self.peak_size = int(peak_size)
         else:
             raise UnparsableOrderException([order_type, order_id, price, volume, peak_size])
 
     def get_order(self):
+        volume_fmt = locale.format_string('%d', self.volume, True)
+        peak_fmt = locale.format_string('%d', self.peak_size, True)
+        price_fmt = locale.format_string('%d', self.price, True)
         if self.type == 'B':
-            return [self.id, (self.volume, self.peak_size)[self.volume < self.peak_size], self.price]
+            return [self.id, (volume_fmt, peak_fmt)[self.volume < self.peak_size], price_fmt]
         else:
-            return [self.price, (self.volume, self.peak_size)[self.volume < self.peak_size], self.id]
+            return [price_fmt, (volume_fmt, peak_fmt)[self.volume < self.peak_size], self.id]
