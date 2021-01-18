@@ -40,20 +40,23 @@ class OrderBook:
         order_pass.volume = max(0, order_pass.volume - volume)
         order_act.volume = max(0, order_act.volume - volume)
     
-    def proc_queue(self, queue, order, other_queue):
-        while (self.queue[0].price <= order.price) and (order.volume > 0):
-            self.proc_one(queue[0], order)
-            if queue[0].volume == 0:
-                queue[0].pop()
-        if order.volume > 0:
-            self.other_queue.append(order)
-            self.other_queue.sort()
-    
     def proc(self, order):
         if order.type == "B":
-            self.proc_queue(self.sell_queue, order, self.buy_queue)
+            while (self.sell_queue[0].price <= order.price) and (order.volume > 0):
+                self.proc_one(self.sell_queue[0], order)
+                if self.sell_queue[0].volume == 0:
+                    self.sell_queue[0].pop()
+            if order.volume > 0:
+                self.buy_queue.append(order)
+                self.buy_queue.sort()
         else:
-            self.proc_queue(self.buy_queue, order, self.sell_queue)
+            while (self.buy_queue[0].price >= order.price) and (order.volume > 0):
+                self.proc_one(self.buy_queue[0], order)
+                if self.buy_queue[0].volume == 0:
+                    self.buy_queue[0].pop()
+            if order.volume > 0:
+                self.sell_queue.append(order)
+                self.sell_queue.sort(reverse=True)
 
 if __name__ == "__main__":
     ob = OrderBook()
