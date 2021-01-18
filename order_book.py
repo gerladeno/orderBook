@@ -25,7 +25,8 @@ class OrderBook:
 
         table.align = "r"
         table.header = False
-        table._min_width = {'1': 8, '2': 11, '3': 5, '4': 5, '5': 11, '6': 8}
+        table._min_width = {'1': 10, '2': 13, '3': 7, '4': 7, '5': 13, '6': 10}
+        table.padding_width = 0
         header = '+' + '-' * 65 + '+\n| BUY' + ' ' * 28 + '| SELL' + ' ' * 27 + \
                  '|\n| Id       | Volume      | Price | Price | Volume      | Id       |\n'
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     ob.sell_queue.append(Order('S', '1231', '1000', '10'))
     ob.sell_queue.append(Order('S', '1232', '1010', '5'))
     ob.sell_queue.append(Order('S', '1233', '1020', '8'))
-    ob.sell_queue.append(Order('S', '1234', '12341532', '2'))
+    ob.sell_queue.append(Order('S', '1234', '1234', '2'))
     ob.sell_queue.append(IcebergOrder('S', '1235', '1010', '100000', '1000'))
     ob.buy_queue.append(Order('B', '1236', '990', '7'))
     ob.buy_queue.append(Order('B', '1237', '980', '3'))
