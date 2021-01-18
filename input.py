@@ -1,4 +1,5 @@
 import re
+import sys
 
 from orders import Order, IcebergOrder, UnparsableOrderException
 
@@ -16,8 +17,7 @@ def read_string():
         else:
             raise UnparsableOrderException(*order)
     except UnparsableOrderException as err:
-        # write to stderr
-        print(err.txt)
+        sys.stderr.write(err.txt)
         return None
 
 
