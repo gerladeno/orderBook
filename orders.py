@@ -15,7 +15,10 @@ class Order:
             raise UnparsableOrderException([order_type, order_id, price, volume])
 
     def get_order(self):
-        return self.type, self.id, self.price, self.volume
+        if self.type == 'B':
+            return [self.id, self.price, self.volume]
+        else:
+            return [self.volume, self.price, self.id]
 
 
 class IcebergOrder(Order):
@@ -27,4 +30,7 @@ class IcebergOrder(Order):
             raise UnparsableOrderException([order_type, order_id, price, volume, peak_size])
 
     def get_order(self):
-        return self.type, self.id, self.price, (self.volume, self.peak_size)[self.volume < self.peak_size]
+        if self.type == 'B':
+            return [self.id, (self.volume, self.peak_size)[self.volume < self.peak_size], self.price]
+        else:
+            return [self.price, (self.volume, self.peak_size)[self.volume < self.peak_size], self.id]
