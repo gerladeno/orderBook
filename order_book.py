@@ -10,10 +10,11 @@ class OrderBook:
 
     def display_state(self):
         table = PrettyTable()
-        table.field_names = ['Id', 'Volume', 'Price', '1Price', '1Volume', '1Id']
+        table.field_names = ['1', '2', '3', '4', '5', '6']
         sell = len(self.sell_queue)
         buy = len(self.buy_queue)
         for i in range(min(sell, buy)):
+            tmp = self.sell_queue[i].get_order()
             table.add_row(self.buy_queue[i].get_order() + self.sell_queue[i].get_order())
         if buy > sell:
             for i in range(sell, buy):
@@ -22,7 +23,13 @@ class OrderBook:
             for i in range(buy, sell):
                 table.add_row(['', '', ''] + self.sell_queue[i].get_order())
 
-        print(table)
+        table.align = "r"
+        table.header = False
+        table._min_width = {'1': 8, '2': 11, '3': 5, '4': 5, '5': 11, '6': 8}
+        header = '+' + '-' * 65 + '+\n| BUY' + ' ' * 28 + '| SELL' + ' ' * 27 + \
+                 '|\n| Id       | Volume      | Price | Price | Volume      | Id       |\n'
+
+        print(header + table.get_string())
 
     def proc_one(self, order_pass, order_act):
         volume = min(order_pas.volue, order_act.volume)
