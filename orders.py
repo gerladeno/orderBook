@@ -1,8 +1,3 @@
-import locale
-
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-
-
 class UnparsableOrderException(Exception):
     def __init__(self, input_values):
         self.txt = f"Cant' parse the following elements: {input_values}"
@@ -20,8 +15,8 @@ class Order:
             raise UnparsableOrderException([order_type, order_id, price, volume])
 
     def get_order(self):
-        volume_fmt = locale.format_string('%d', self.volume, True)
-        price_fmt = locale.format_string('%d', self.price, True)
+        volume_fmt = f"{self.volume:,}"
+        price_fmt = f"{self.price:,}"
         if self.type == 'B':
             return [self.id, volume_fmt, price_fmt]
         else:
@@ -37,9 +32,9 @@ class IcebergOrder(Order):
             raise UnparsableOrderException([order_type, order_id, price, volume, peak_size])
 
     def get_order(self):
-        volume_fmt = locale.format_string('%d', self.volume, True)
-        peak_fmt = locale.format_string('%d', self.peak_size, True)
-        price_fmt = locale.format_string('%d', self.price, True)
+        volume_fmt = f"{self.volume:,}"
+        peak_fmt = f"{self.peak_size:,}"
+        price_fmt = f"{self.price:,}"
         if self.type == 'B':
             return [self.id, (volume_fmt, peak_fmt)[self.volume > self.peak_size], price_fmt]
         else:
