@@ -23,9 +23,9 @@ class Order:
         volume_fmt = locale.format_string('%d', self.volume, True)
         price_fmt = locale.format_string('%d', self.price, True)
         if self.type == 'B':
-            return [self.id, price_fmt, volume_fmt]
+            return [self.id, volume_fmt, price_fmt]
         else:
-            return [volume_fmt, price_fmt, self.id]
+            return [price_fmt, volume_fmt, self.id]
 
 
 class IcebergOrder(Order):
@@ -41,6 +41,6 @@ class IcebergOrder(Order):
         peak_fmt = locale.format_string('%d', self.peak_size, True)
         price_fmt = locale.format_string('%d', self.price, True)
         if self.type == 'B':
-            return [self.id, (volume_fmt, peak_fmt)[self.volume < self.peak_size], price_fmt]
+            return [self.id, (volume_fmt, peak_fmt)[self.volume > self.peak_size], price_fmt]
         else:
-            return [price_fmt, (volume_fmt, peak_fmt)[self.volume < self.peak_size], self.id]
+            return [price_fmt, (volume_fmt, peak_fmt)[self.volume > self.peak_size], self.id]
