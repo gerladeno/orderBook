@@ -8,7 +8,7 @@ def read_string():
     input_string = input()
     order = re.sub('#.*', '', input_string).replace(' ', '').split(',')
     try:
-        if len(order) == 0:
+        if order == ['']:
             return None
         elif len(order) == 4:
             return Order(*order)
@@ -22,7 +22,7 @@ def read_string():
 
 
 if __name__ == "__main__":
-    pass
+    read_string()
     # d = {0: 234234, 1: 23, 3: 99}
 
 # adsasdas ads hdaksjdhag sldj hbaslkddas# sdkjfh sdkjfsf89 43 3oi43
