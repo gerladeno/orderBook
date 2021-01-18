@@ -14,6 +14,9 @@ class Order:
         else:
             raise UnparsableOrderException([order_type, order_id, price, volume])
 
+    def get_order(self):
+        return self.type, self.id, self.price, self.volume
+
 
 class IcebergOrder(Order):
     def __init__(self, order_type, order_id, price, volume, peak_size):
@@ -22,3 +25,6 @@ class IcebergOrder(Order):
             self.peak_size = peak_size
         else:
             raise UnparsableOrderException([order_type, order_id, price, volume, peak_size])
+
+    def get_order(self):
+        return self.type, self.id, self.price, (self.volume, self.peak_size)[self.volume < self.peak_size]
