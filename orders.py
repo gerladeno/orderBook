@@ -32,10 +32,9 @@ class IcebergOrder(Order):
             raise UnparsableOrderException([order_type, order_id, price, volume, peak_size])
 
     def get_order(self):
-        volume_fmt = f"{self.volume:,}"
-        peak_fmt = f"{self.peak_size:,}"
+        volume = f"{min(self.volume, self.peak_size):,}"
         price_fmt = f"{self.price:,}"
         if self.type == 'B':
-            return [self.id, (volume_fmt, peak_fmt)[self.volume > self.peak_size], price_fmt]
+            return [self.id, volume, price_fmt]
         else:
-            return [price_fmt, (volume_fmt, peak_fmt)[self.volume > self.peak_size], self.id]
+            return [price_fmt, volume, self.id]
