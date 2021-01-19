@@ -1,6 +1,6 @@
 class UnparsableOrderException(Exception):
     def __init__(self, input_values):
-        self.txt = f"Can't parse the following elements: {input_values}\n"
+        self.txt = f"Can't parse the following elements: {input_values}, entry skipped\n"
 
 
 class Order:
