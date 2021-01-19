@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-from input import read_string
+
 from orders import Order, IcebergOrder
 
 
@@ -37,10 +37,10 @@ class OrderBook:
         buy_id = order_pass.id if order_pass.type == "B" else order_act.id
         sell_id = order_pass.id if order_pass.type == "S" else order_act.id
         price = order_pass.price
-        print ('{0},{1},{2},{3}'.format(buy_id, sell_id, price, volume))
+        print('{0},{1},{2},{3}'.format(buy_id, sell_id, price, volume))
         order_pass.volume = max(0, order_pass.volume - volume)
         order_act.volume = max(0, order_act.volume - volume)
-    
+
     def proc(self, order):
         if order.type == "B":
             while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
@@ -59,6 +59,7 @@ class OrderBook:
                 self.sell_queue.append(order)
                 self.sell_queue.sort(key=lambda x: x.price)
         self.display_state()
+
 
 if __name__ == "__main__":
     ob = OrderBook()

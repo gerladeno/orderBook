@@ -1,4 +1,3 @@
-import re
 import sys
 
 from orders import Order, IcebergOrder, UnparsableOrderException
