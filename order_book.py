@@ -46,14 +46,14 @@ class OrderBook:
         order_pass.volume = max(0, order_pass.volume - volume)
         order_act.volume = max(0, order_act.volume - volume)
 
-    def is_id_presented(self, new_id):
+    def is_id_present(self, new_id):
         a = True in (x.id == new_id for x in self.sell_queue)
         b = True in (x.id == new_id for x in self.buy_queue)
         return a or b
 
     def proc(self, order):
-        if self.is_id_presented(order.id):
-            sys.stderr.write("Duplicated ID\n")
+        if self.is_id_present(order.id):
+            sys.stderr.write(f"Duplicate ID: {order.id}, order skipped\n")
             return
         if order.type == "B":
             while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
