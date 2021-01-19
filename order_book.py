@@ -33,7 +33,7 @@ class OrderBook:
         print(header + table.get_string())
 
     def proc_one(self, order_pass, order_act):
-        volume = min(order_pas.volue, order_act.volume)
+        volume = min(order_pass.volue, order_act.volume)
         buy_id = order_pass.id if order_pass.type == "B" else order_act.id
         sell_id = order_pass.id if order_pass.type == "S" else order_act.id
         price = order_pass.price
@@ -49,7 +49,7 @@ class OrderBook:
                     self.sell_queue[0].pop()
             if order.volume > 0:
                 self.buy_queue.append(order)
-                self.buy_queue.sort()
+                self.buy_queue.sort(key=lambda x: x.price, reverse=True)
         else:
             while (len(self.buy_queue) > 0 and self.buy_queue[0].price >= order.price) and (order.volume > 0):
                 self.proc_one(self.buy_queue[0], order)
@@ -57,7 +57,7 @@ class OrderBook:
                     self.buy_queue[0].pop()
             if order.volume > 0:
                 self.sell_queue.append(order)
-                self.sell_queue.sort(reverse=True)
+                self.sell_queue.sort(key=lambda x: x.price)
         self.display_state()
 
 if __name__ == "__main__":
