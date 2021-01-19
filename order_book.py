@@ -43,7 +43,7 @@ class OrderBook:
     
     def proc(self, order):
         if order.type == "B":
-            while (self.sell_queue[0].price <= order.price) and (order.volume > 0):
+            while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
                 self.proc_one(self.sell_queue[0], order)
                 if self.sell_queue[0].volume == 0:
                     self.sell_queue[0].pop()
@@ -51,13 +51,14 @@ class OrderBook:
                 self.buy_queue.append(order)
                 self.buy_queue.sort()
         else:
-            while (self.buy_queue[0].price >= order.price) and (order.volume > 0):
+            while (len(self.buy_queue) > 0 and self.buy_queue[0].price >= order.price) and (order.volume > 0):
                 self.proc_one(self.buy_queue[0], order)
                 if self.buy_queue[0].volume == 0:
                     self.buy_queue[0].pop()
             if order.volume > 0:
                 self.sell_queue.append(order)
                 self.sell_queue.sort(reverse=True)
+        self.display_state()
 
 if __name__ == "__main__":
     ob = OrderBook()
