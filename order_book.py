@@ -51,7 +51,7 @@ class OrderBook:
         b = True in (x.id == new_id for x in self.buy_queue)
         return a or b
 
-    def proc(self, order):
+    def proc_new_order(self, order):
         if self.is_id_presented(order.id):
             sys.stderr.write(f"Duplicate ID: {order.id}, order skipped\n")
             return
