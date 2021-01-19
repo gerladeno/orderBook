@@ -13,12 +13,12 @@ def read_string():
             elif len(order) == 5:
                 return IcebergOrder(*order)
             else:
-                raise UnparsableOrderException(*order)
-        order = input_string.replace(' ', '')
-        if (order == '') or (order[0] == '#'):
+                raise UnparsableOrderException(order)
+        input_string = input_string.replace(' ', '')
+        if (input_string == '') or (input_string[0] == '#'):
             return None
         else:
-            raise UnparsableOrderException(*order)
+            raise UnparsableOrderException(input_string)
     except UnparsableOrderException as err:
         sys.stderr.write(err.txt)
         return None

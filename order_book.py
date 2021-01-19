@@ -11,27 +11,30 @@ class OrderBook:
         self.buy_queue = []
 
     def display_state(self):
-        table = PrettyTable()
-        table.field_names = ['1', '2', '3', '4', '5', '6']
-        sell = len(self.sell_queue)
-        buy = len(self.buy_queue)
-        for i in range(min(sell, buy)):
-            table.add_row(self.buy_queue[i].get_order() + self.sell_queue[i].get_order())
-        if buy > sell:
-            for i in range(sell, buy):
-                table.add_row(self.buy_queue[i].get_order() + ['', '', ''])
-        elif buy < sell:
-            for i in range(buy, sell):
-                table.add_row(['', '', ''] + self.sell_queue[i].get_order())
+        if not (self.sell_queue or self.buy_queue):
+            print('Order book is empty')
+        else:
+            table = PrettyTable()
+            table.field_names = ['1', '2', '3', '4', '5', '6']
+            sell = len(self.sell_queue)
+            buy = len(self.buy_queue)
+            for i in range(min(sell, buy)):
+                table.add_row(self.buy_queue[i].get_order() + self.sell_queue[i].get_order())
+            if buy > sell:
+                for i in range(sell, buy):
+                    table.add_row(self.buy_queue[i].get_order() + ['', '', ''])
+            elif buy < sell:
+                for i in range(buy, sell):
+                    table.add_row(['', '', ''] + self.sell_queue[i].get_order())
 
-        table.align = "r"
-        table.header = False
-        table._min_width = {'1': 10, '2': 13, '3': 7, '4': 7, '5': 13, '6': 10}
-        table.padding_width = 0
-        header = '+' + '-' * 65 + '+\n| BUY' + ' ' * 28 + '| SELL' + ' ' * 27 + \
-                 '|\n| Id       | Volume      | Price | Price | Volume      | Id       |\n'
+            table.align = "r"
+            table.header = False
+            table._min_width = {'1': 10, '2': 13, '3': 7, '4': 7, '5': 13, '6': 10}
+            table.padding_width = 0
+            header = '+' + '-' * 65 + '+\n| BUY' + ' ' * 28 + '| SELL' + ' ' * 27 + \
+                     '|\n| Id       | Volume      | Price | Price | Volume      | Id       |\n'
 
-        print(header + table.get_string())
+            print(header + table.get_string())
 
     @staticmethod
     def proc_order_execution(order_pass, order_act):
@@ -46,15 +49,11 @@ class OrderBook:
     def is_id_presented(self, new_id):
         a = True in (x.id == new_id for x in self.sell_queue)
         b = True in (x.id == new_id for x in self.buy_queue)
-        print(a)
-        print(b)
-        res = a or b
-        print(res)
-        return res
+        return a or b
 
     def proc(self, order):
-        if self.is_id_presented(order):
-            sys.stderr.write("Duplicated ID")
+        if self.is_id_presented(order.id):
+            sys.stderr.write("Duplicated ID\n")
             return
         if order.type == "B":
             while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
