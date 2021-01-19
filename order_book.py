@@ -14,7 +14,6 @@ class OrderBook:
         sell = len(self.sell_queue)
         buy = len(self.buy_queue)
         for i in range(min(sell, buy)):
-            tmp = self.sell_queue[i].get_order()
             table.add_row(self.buy_queue[i].get_order() + self.sell_queue[i].get_order())
         if buy > sell:
             for i in range(sell, buy):
