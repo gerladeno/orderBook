@@ -1,8 +1,8 @@
-import input
+from input import read_string
 from order_book import OrderBook
 
 book = OrderBook()
 while True:
-    order = input.read_string()
+    order = read_string()
     if order:
-        book.proc(order)
+        book.proc_new_order(order)
