@@ -26,7 +26,3 @@ def read_string():
 
 if __name__ == "__main__":
     read_string()
-    # d = {0: 234234, 1: 23, 3: 99}
-
-# adsasdas ads hdaksjdhag sldj hbaslkddas# sdkjfh sdkjfsf89 43 3oi43
-# B,12312,312312,41541234,342 #dffkvcjdnfvd

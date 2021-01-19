@@ -1,3 +1,5 @@
+import sys
+
 from prettytable import PrettyTable
 
 from orders import Order, IcebergOrder
@@ -31,7 +33,8 @@ class OrderBook:
 
         print(header + table.get_string())
 
-    def proc_one(self, order_pass, order_act):
+    @staticmethod
+    def proc_order_execution(order_pass, order_act):
         volume = min(order_pass.volume, order_act.volume)
         buy_id = order_pass.id if order_pass.type == "B" else order_act.id
         sell_id = order_pass.id if order_pass.type == "S" else order_act.id
@@ -40,10 +43,22 @@ class OrderBook:
         order_pass.volume = max(0, order_pass.volume - volume)
         order_act.volume = max(0, order_act.volume - volume)
 
+    def is_id_presented(self, new_id):
+        a = True in (x.id == new_id for x in self.sell_queue)
+        b = True in (x.id == new_id for x in self.buy_queue)
+        print(a)
+        print(b)
+        res = a or b
+        print(res)
+        return res
+
     def proc(self, order):
+        if self.is_id_presented(order):
+            sys.stderr.write("Duplicated ID")
+            return
         if order.type == "B":
             while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
-                self.proc_one(self.sell_queue[0], order)
+                self.proc_order_execution(self.sell_queue[0], order)
                 if self.sell_queue[0].volume == 0:
                     self.sell_queue.pop(0)
             if order.volume > 0:
@@ -51,7 +66,7 @@ class OrderBook:
                 self.buy_queue.sort(key=lambda x: x.price, reverse=True)
         else:
             while (len(self.buy_queue) > 0 and self.buy_queue[0].price >= order.price) and (order.volume > 0):
-                self.proc_one(self.buy_queue[0], order)
+                self.proc_order_execution(self.buy_queue[0], order)
                 if self.buy_queue[0].volume == 0:
                     self.buy_queue.pop(0)
             if order.volume > 0:
