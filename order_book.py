@@ -2,13 +2,14 @@ import sys
 
 from prettytable import PrettyTable
 
-from orders import Order, IcebergOrder
+from orders import Order
 
 
 class OrderBook:
     def __init__(self):
         self.sell_queue = []
         self.buy_queue = []
+        self.order_counter = 0
 
     def display_state(self):
         if not (self.sell_queue or self.buy_queue):
@@ -37,40 +38,50 @@ class OrderBook:
             print(header + table.get_string())
 
     @staticmethod
-    def proc_order_execution(order_pass, order_act):
-        volume = min(order_pass.volume, order_act.volume)
-        buy_id = order_pass.id if order_pass.type == "B" else order_act.id
-        sell_id = order_pass.id if order_pass.type == "S" else order_act.id
-        price = order_pass.price
-        print('{0},{1},{2},{3}'.format(buy_id, sell_id, price, volume))
-        order_pass.volume = max(0, order_pass.volume - volume)
-        order_act.volume = max(0, order_act.volume - volume)
+    def proc_order_execution(orders, order_act):
+        deal_volume = 0
+        if (len(orders) > 1) and (orders[0].price == orders[1].price):
+            deal_volume = min(orders[0].peak_size, order_act.volume)
+        else:
+            deal_volume = min(orders[0].volume, order_act.volume)
+
+        buy_id = orders[0].id if orders[0].type == "B" else order_act.id
+        sell_id = orders[0].id if orders[0].type == "S" else order_act.id
+        price = orders[0].price
+        print('{0},{1},{2},{3}'.format(buy_id, sell_id, price, deal_volume))
+        orders[0].volume = max(0, orders[0].volume - deal_volume)
+        order_act.volume = max(0, order_act.volume - deal_volume)
 
     def is_id_presented(self, new_id):
         a = True in (x.id == new_id for x in self.sell_queue)
         b = True in (x.id == new_id for x in self.buy_queue)
         return a or b
 
+    def update_counter(self, order):
+        order.time = self.order_counter
+        self.order_counter = self.order_counter + 1
+
     def proc_new_order(self, order):
         if self.is_id_presented(order.id):
             sys.stderr.write(f"Duplicate ID: {order.id}, order skipped\n")
             return
+        self.update_counter(order)
+        orders = self.buy_queue
+        orders_opposite = self.sell_queue
         if order.type == "B":
-            while (len(self.sell_queue) > 0 and self.sell_queue[0].price <= order.price) and (order.volume > 0):
-                self.proc_order_execution(self.sell_queue[0], order)
-                if self.sell_queue[0].volume == 0:
-                    self.sell_queue.pop(0)
-            if order.volume > 0:
-                self.buy_queue.append(order)
-                self.buy_queue.sort(key=lambda x: x.price, reverse=True)
-        else:
-            while (len(self.buy_queue) > 0 and self.buy_queue[0].price >= order.price) and (order.volume > 0):
-                self.proc_order_execution(self.buy_queue[0], order)
-                if self.buy_queue[0].volume == 0:
-                    self.buy_queue.pop(0)
-            if order.volume > 0:
-                self.sell_queue.append(order)
-                self.sell_queue.sort(key=lambda x: x.price)
+            orders = self.sell_queue
+            orders_opposite = self.buy_queue
+
+        while (len(orders) > 0 and orders[0].price <= order.price) and (order.volume > 0):
+            self.proc_order_execution(orders, order)
+            if orders[0].volume == 0:
+                orders.pop(0)
+            else:
+                self.update_counter(orders[0])
+        if order.volume > 0:
+            orders_opposite.append(order)
+        self.buy_queue.sort(key=lambda x: (x.price, -x.time), reverse=True)
+        self.sell_queue.sort(key=lambda x: (x.price, x.time))
         self.display_state()
 
 
@@ -80,9 +91,9 @@ if __name__ == "__main__":
     ob.sell_queue.append(Order('S', '1232', '1010', '5'))
     ob.sell_queue.append(Order('S', '1233', '1020', '8'))
     ob.sell_queue.append(Order('S', '1234', '1234', '2'))
-    ob.sell_queue.append(IcebergOrder('S', '1235', '1010', '100000', '1000'))
+    ob.sell_queue.append(Order('S', '1235', '1010', '100000', '1000'))
     ob.buy_queue.append(Order('B', '1236', '990', '7'))
     ob.buy_queue.append(Order('B', '1237', '980', '3'))
-    ob.buy_queue.append(IcebergOrder('B', '1238', '950', '100', '10'))
-    ob.buy_queue.append(IcebergOrder('B', '1238', '940', '500', '10'))
+    ob.buy_queue.append(Order('B', '1238', '950', '100', '10'))
+    ob.buy_queue.append(Order('B', '1238', '940', '500', '10'))
     ob.display_state()

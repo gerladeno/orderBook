@@ -1,6 +1,6 @@
 import sys
 
-from orders import Order, IcebergOrder, UnparsableOrderException
+from orders import Order, UnparsableOrderException
 
 
 def read_string():
@@ -8,10 +8,8 @@ def read_string():
     order = input_string.split(',')
     try:
         if (len(input_string)) and (input_string[0] != ' ') and (input_string[0] != '#'):
-            if len(order) == 4:
+            if len(order) == 4 or len(order) == 5:
                 return Order(*order)
-            elif len(order) == 5:
-                return IcebergOrder(*order)
             else:
                 raise UnparsableOrderException(order)
         input_string = input_string.replace(' ', '')
